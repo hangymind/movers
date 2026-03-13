@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movers公会 - MOV</title>
+    <link rel="icon" href="imgs/movers.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+        }
+    </style>
+     
+     <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0071e3',
+                        secondary: '#f5f5f7',
+                        dark: '#1d1d1f',
+                    },
+                    fontFamily: {
+                        sans: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                    transitionProperty: {
+                        'height': 'height',
+                        'spacing': 'margin, padding',
+                        'all': 'all',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'spin-slow': 'spin 2s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .member-card-hover {
+                @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-500 ease-out;
+            }
+            .theme-transition {
+                @apply transition-all duration-700 ease-in-out;
+            }
+            .carousel-item {
+                @apply absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out;
+            }
+            .carousel-item.active {
+                @apply opacity-100;
+            }
+            .carousel-item img {
+                @apply object-cover;
+            }
+            .loader-spinner {
+                @apply w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin-slow;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #666;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #888;
+        }
+        
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+        .dark #loader {
+            background-color: #1d1d1f;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .carousel-dot {
+            transition: all 0.3s ease;
+        }
+        .carousel-dot:first-child {
+            width: 24px !important;
+        }
+        .carousel-dot.active {
+            width: 24px;
+            background-color: #0071e3;
+        }
+        
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-ripple:after {
+            content: "";
+            background: rgba(255,255,255,0.3);
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .carousel-bg-container {
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .announcement-popup {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: rgba(0, 0, 0, 0.6);
+             backdrop-filter: blur(6px);
+             z-index: 9998;
+             opacity: 0;
+             visibility: hidden;
+             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             padding: 20px;
+         }
+         
+         .announcement-popup.active {
+             opacity: 1;
+             visibility: visible;
+         }
+         
+         .announcement-content {
+             background: white;
+             border-radius: 30px;
+             padding: 40px;
+             max-width: 500px;
+             width: 100%;
+             max-height: 80vh;
+             overflow-y: auto;
+             box-shadow: 0 60px 120px rgba(0, 0, 0, 0.16);
+             transform: scale(0.9);
+             transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+         }
+         
+         .announcement-popup.active .announcement-content {
+             transform: scale(1);
+         }
+         
+         .announcement-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 25px;
+             padding-bottom: 15px;
+             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+         }
+         
+         .announcement-header h3 {
+             font-size: 24px;
+             font-weight: 600;
+             color: var(--text);
+             display: flex;
+             align-items: center;
+         }
+         
+         .announcement-close {
+             background: rgba(0, 0, 0, 0.05);
+             border: none;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             cursor: pointer;
+             transition: all 0.3s ease;
+         }
+         
+         .announcement-close:hover {
+             background: rgba(0, 0, 0, 0.1);
+         }
+         
+         .announcement-close i {
+             font-size: 18px;
+             color: var(--text);
+         }
+         
+         .announcement-body {
+             font-size: 16px;
+             line-height: 1.8;
+             color: var(--text);
+         }
+         
+         .announcement-body p {
+             margin-bottom: 15px;
+         }
+         
+         .announcement-body p:last-child {
+             margin-bottom: 0;
+         }
+    </style>
+</head>
+
+<body class="bg-white dark:bg-dark text-gray-900 dark:text-gray-100 theme-transition min-h-screen opacity-0 animate-fade-in">
+    <div id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-dark/80 backdrop-blur-md theme-transition">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 animate-slide-up" style="animation-delay: 0.2s">
+                <img src="imgs/movers.png" alt="Movers Logo" class="h-8 w-auto">
+                <div class="text-xl font-semibold text-primary">Movers<span class="dark:text-white">公会</span></div>
+            </div>
+            
+            <div class="flex items-center gap-6 animate-slide-up" style="animation-delay: 0.4s">
+                <nav class="hidden md:flex gap-8">
+                    <a href="#home" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">首页</a>
+                    <a href="#members" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">内阁成员</a>
+                    <a href="#about" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">关于MOV</a>
+                    <a href="#join" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">申请加入</a>
+                </nav>
+                
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-500 btn-ripple">
+                    <i class="fa fa-sun-o dark:hidden text-xl transition-all duration-700"></i>
+                    <i class="fa fa-moon-o hidden dark:block text-xl transition-all duration-700"></i>
+                </button>
+                
+                <button id="menu-toggle" class="md:hidden p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-500 btn-ripple">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-dark theme-transition border-t border-gray-200 dark:border-gray-800 transform transition-all duration-500 ease-in-out">
+            <div class="container mx-auto px-4 py-4 flex flex-col gap-4">
+                <a href="#home" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 py-2">首页</a>
+                <a href="#members" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 py-2">内阁成员</a>
+                <a href="#about" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 py-2">关于MOV</a>
+                <a href="#join" class="text-gray-800 dark:text-gray-200 hover:text-primary transition-all duration-300 py-2">申请加入</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="home" class="carousel-bg-container pt-32 pb-20 px-4 theme-transition">
+        <div class="carousel-item active absolute inset-0 z-0">
+            <img src="imgs/mov1.jpg" alt="MOV展示1" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        <div class="carousel-item absolute inset-0 z-0">
+            <img src="imgs/mov2.jpg" alt="MOV展示2" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        <div class="carousel-item absolute inset-0 z-0">
+            <img src="imgs/mov3.jpg" alt="MOV展示3" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        <div class="carousel-item absolute inset-0 z-0">
+            <img src="imgs/mov4.png" alt="MOV展示4" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        <div class="carousel-item absolute inset-0 z-0">
+            <img src="imgs/mov5.png" alt="MOV展示5" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        <div class="carousel-item absolute inset-0 z-0">
+            <img src="imgs/mov6.png" alt="MOV展示6" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
+        </div>
+        
+        <button class="carousel-prev absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-md text-white hover:bg-white/50 transition-all duration-300 flex items-center justify-center btn-ripple z-10">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <button class="carousel-next absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur-md text-white hover:bg-white/50 transition-all duration-300 flex items-center justify-center btn-ripple z-10">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+        
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            <button class="carousel-dot active w-6 h-2 rounded-full bg-white/50"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50"></button>
+        </div>
+        
+        <div class="container mx-auto max-w-6xl relative z-10 h-full flex flex-col justify-center items-center">
+            <div class="text-center animate-slide-up" style="animation-delay: 0.8s">
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6 text-balance text-white">
+                    <span class="text-primary">Movers公会</span>
+                    <span class="block mt-2">品小众耐玩养生人生</span>
+                </h1>
+                <p class="text-[clamp(1rem,2vw,1.25rem)] text-white/90 max-w-2xl mx-auto mb-12 text-balance">
+                    创立于2023.12.31，平均等级129。
+                </p>
+                <a href="#members" class="inline-block bg-primary text-white px-8 py-3 rounded-full hover:bg-[#0077ed] transition-all duration-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 btn-ripple">
+                    认识内阁成员 <i class="fa fa-arrow-down ml-2 animate-bounce"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="members" class="py-20 px-4 bg-white dark:bg-dark theme-transition">
+        <div class="container mx-auto max-w-7xl">
+            <div class="text-center mb-16 animate-slide-up">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">内阁成员</h2>
+                <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                每一件事都共同商讨
+            </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 mx-auto max-w-6xl">
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.1s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/h1mo1.jpg" alt="h1mo1 - 大总管" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">h1mo1</h3>
+                        <p class="text-primary text-xs">大总管</p>
+                    </div>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/duolian.jpg" alt="duolian - 副管" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">duolian</h3>
+                        <p class="text-primary text-xs">会长</p>
+                    </div>
+                </div>
+                <!--<div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.3s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/frozenx.jpg" alt="frozenx - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">frozenx</h3>
+                        <p class="text-primary text-xs">成员</p>
+                    </div>
+                </div>-->
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.4s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/lerv.jpg" alt="lerv - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">Lerv</h3>
+                        <p class="text-primary text-xs">下任会长</p>
+                    </div>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.5s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/bintang.jpg" alt="bintang - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">xiaobinTang</h3>
+                        <p class="text-primary text-xs">成员</p>
+                    </div>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.6s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/nmrn.jpg" alt="nmrn - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">_NMRN_</h3>
+                        <p class="text-primary text-xs">成员</p>
+                    </div>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.7s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="imgs/avatars/xy.jpg" alt="xy - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">Xyiw46_</h3>
+                        <p class="text-primary text-xs">技术支持</p>
+                    </div>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.8s">
+                    <div class="h-36 overflow-hidden">
+                        <img src="https://ts4.tc.mm.bing.net/th/id/OIP-C.LGdyhHmVwaebSiVobGmCAQHaJX?rs=1&pid=ImgDetMain" alt="您 - 待加入" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-3 text-center">
+                        <h3 class="text-base font-semibold mb-1">您</h3>
+                        <p class="text-primary text-xs">待加入</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 px-4 theme-transition animate-slide-up">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-6">关于MOV</h2>
+           
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md p-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                    <div class="text-primary text-3xl mb-4"><i class="fa fa-hand-pointer-o"></i></div>
+                    <h3 class="text-xl font-semibold mb-2">公会底蕴</h3>
+                    <p class="text-gray-600 dark:text-gray-400">由MOV最严厉的父亲h1mo1在2023年12月31日创立，传承严谨而温暖的公会文化</p>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md p-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                    <div class="text-primary text-3xl mb-4"><i class="fa fa-microphone"></i></div>
+                    <h3 class="text-xl font-semibold mb-2">群聊语音</h3>
+                    <p class="text-gray-600 dark:text-gray-400">加入MOV官方QQ群，感受鸡鸣狗吠的氛围，结识志同道合的朋友</p>
+                </div>
+                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md p-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                    <div class="text-primary text-3xl mb-4"><i class="fa fa-star"></i></div>
+                    <h3 class="text-xl font-semibold mb-2">周期比赛</h3>
+                    <p class="text-gray-600 dark:text-gray-400">已经连续两次举办比赛活动，虽然第二次被M28搞黄了，但热情不减</p>
+                </div>
+            </div>
+            <div class="inline-block mt-12">
+                <a href="#join" class="inline-block border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full transition-all duration-500 transform hover:-translate-y-1 hover:scale-105 btn-ripple">
+                    申请加入 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="join" class="py-20 px-4 bg-white dark:bg-gray-900 theme-transition">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-6">申请加入MOV</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-lg mb-8 max-w-3xl mx-auto">
+                填写申请信息，加入我们，一起创造属于Movers的精彩故事
+            </p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden">
+                <iframe src="https://wj.qq.com/s2/25735396/1769/" allowfullscreen sandbox="allow-same-origin allow-scripts allow-modals allow-downloads allow-forms allow-popups" class="w-full h-[60vh]"></iframe>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-secondary/80 dark:bg-gray-900/80 backdrop-blur-sm py-12 px-4 theme-transition">
+        <div class="container mx-auto max-w-6xl">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="text-xl font-semibold text-primary mb-2">Movers公会</div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">© 2026 Movers. All rights reserved.</p>
+                </div>
+                <div class="flex gap-6">
+                    <a href="#home" class="text-gray-600 dark:text-gray-400 hover:text-primary transition-all duration-500 transform hover:-translate-y-1"><i class="fa fa-home text-xl"></i></a>
+                    <a href="#members" class="text-gray-600 dark:text-gray-400 hover:text-primary transition-all duration-500 transform hover:-translate-y-1"><i class="fa fa-users text-xl"></i></a>
+                    <a href="#about" class="text-gray-600 dark:text-gray-400 hover:text-primary transition-all duration-500 transform hover:-translate-y-1"><i class="fa fa-info text-xl"></i></a>
+                    <a href="#" onclick="document.getElementById('qrPopup').classList.remove('translate-x-full')" class="text-gray-600 dark:text-gray-400 hover:text-primary transition-all duration-500 transform hover:-translate-y-1"><i class="fa fa-qrcode text-xl"></i></a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <div class="announcement-popup" id="announcementPopup">
+        <div class="announcement-content">
+            <div class="announcement-header">
+                <h3><i class="fa fa-bullhorn mr-2"></i>公告</h3>
+                <button class="announcement-close" id="announcementClose">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="announcement-body" id="announcementBody">
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="fixed bottom-4 right-4 bg-white dark:bg-gray-900 shadow-xl rounded-lg p-4 transform translate-x-full transition-transform duration-500 ease-in-out z-50" id="qrPopup">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col items-center">
+                <h3 class="text-lg font-semibold mb-2">QQ群二维码</h3>
+                <img src="imgs/QR/ah2.jpg" alt="QQ群二维码" class="w-24 h-24 rounded-lg mb-1">
+                <p class="text-xs text-center">扫描二维码加入QQ群</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <h3 class="text-lg font-semibold mb-2">申请表二维码</h3>
+                <img src="imgs/QR/form.png" alt="申请表二维码" class="w-24 h-24 rounded-lg mb-1">
+                <p class="text-xs text-center">扫描二维码填写申请表</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 800);
+        });
+
+const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+        
+        // 移动端菜单
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-md');
+                header.classList.remove('py-4');
+                header.classList.add('py-2');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.remove('py-2');
+                header.classList.add('py-4');
+            }
+        });
+
+const carouselItems = document.querySelectorAll('.carousel-item');
+        const carouselDots = document.querySelectorAll('.carousel-dot');
+        const prevBtn = document.querySelector('.carousel-prev');
+        const nextBtn = document.querySelector('.carousel-next');
+        let currentSlide = 0;
+        let slideInterval;
+
+        function initCarousel() {
+            showSlide(currentSlide);
+            startSlideInterval();
+            
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetSlideInterval();
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetSlideInterval();
+            });
+            
+            carouselDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    showSlide(index);
+                    resetSlideInterval();
+                });
+            });
+        }
+
+function showSlide(index) {
+            carouselItems.forEach(item => item.classList.remove('active'));
+            carouselDots.forEach(dot => dot.classList.remove('active'));
+            
+            if (index >= carouselItems.length) currentSlide = 0;
+            else if (index < 0) currentSlide = carouselItems.length - 1;
+            else currentSlide = index;
+            
+            carouselItems[currentSlide].classList.add('active');
+            carouselDots[currentSlide].classList.add('active');
+        }
+
+function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function startSlideInterval() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetSlideInterval() {
+            clearInterval(slideInterval);
+            startSlideInterval();
+        }
+
+        document.addEventListener('DOMContentLoaded', initCarousel);
+
+document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+                const ripple = document.createElement('span');
+                ripple.style.width = ripple.style.height = Math.max(this.offsetWidth, this.offsetHeight) + 'px';
+                ripple.style.left = x - (parseInt(ripple.style.width) / 2) + 'px';
+                ripple.style.top = y - (parseInt(ripple.style.height) / 2) + 'px';
+                ripple.classList.add('ripple');
+                
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.zIndex = '10';
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        const announcementPopup = document.getElementById('announcementPopup');
+        const announcementClose = document.getElementById('announcementClose');
+        const announcementBody = document.getElementById('announcementBody');
+
+        announcementClose.addEventListener('click', () => {
+            announcementPopup.classList.remove('active');
+        });
+        
+        announcementPopup.addEventListener('click', (e) => {
+            if (e.target === announcementPopup) {
+                announcementPopup.classList.remove('active');
+            }
+        });
+        
+        const qrPopup = document.getElementById('qrPopup');
+        let hasScrolled = false;
+        
+        // 页面加载后显示弹窗
+        setTimeout(() => {
+            qrPopup.classList.remove('translate-x-full');
+        }, 1000);
+        
+        // 滚动时隐藏弹窗
+        window.addEventListener('scroll', () => {
+            qrPopup.classList.add('translate-x-full');
+        });
+        
+        // 关闭二维码弹窗
+        qrPopup.addEventListener('click', (e) => {
+            if (e.target === qrPopup) {
+                qrPopup.classList.add('translate-x-full');
+            }
+        });
+        
+        const announcementContent = `
+            <p>1、内阁决定于2月4日开始招人，名额有限，择优录取</p>
+            <p>2、向MOV成员们征集一些精彩截图</p>
+            <p>3、不要对本网站图谋不轨</p>
+            <p>——MOV内阁 2026.02.01</p>
+        `;
+        announcementBody.innerHTML = announcementContent;
+        setTimeout(() => {
+            announcementPopup.classList.add('active');
+        }, 1000);
+    </script>
+</body>
+</html>

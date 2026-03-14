@@ -267,7 +267,7 @@
             <div class="flex items-center gap-2 animate-slide-up" style="animation-delay: 0.2s">
                 <img src="imgs/movers.png" alt="Movers Logo" class="h-8 w-auto">
                 <div class="text-xl font-semibold text-primary">Movers<span class="dark:text-white">公会</span></div>
-                <div class="ml-3 text-sm px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-800 dark:text-gray-200">暂无比赛</div>
+                <div class="ml-3 text-sm px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-800 dark:text-gray-200">phigros小比赛</div>
             </div>
             
             <div class="flex items-center gap-6 animate-slide-up" style="animation-delay: 0.4s">
@@ -693,19 +693,13 @@ document.querySelectorAll('.btn-ripple').forEach(btn => {
         });
         
         const qrPopup = document.getElementById('qrPopup');
-        let hasScrolled = false;
-        
-        // 页面加载后显示弹窗
+        let hasScrolled = false
         setTimeout(() => {
             qrPopup.classList.remove('translate-x-full');
         }, 1000);
-        
-        // 滚动时隐藏弹窗
         window.addEventListener('scroll', () => {
             qrPopup.classList.add('translate-x-full');
         });
-        
-        // 关闭二维码弹窗
         qrPopup.addEventListener('click', (e) => {
             if (e.target === qrPopup) {
                 qrPopup.classList.add('translate-x-full');
@@ -713,7 +707,7 @@ document.querySelectorAll('.btn-ripple').forEach(btn => {
         });
         
         const announcementContent = `
-            <p>1、内阁决定于3月14日零点开始招人，最低要求Lvl129</p>
+            <p>1、本期找人已结束，正在进入审核阶段</p>
             <p>2、向MOV成员们征集一些精彩截图</p>
             <p>3、不要对本网站图谋不轨</p>
             <p>——MOV内阁 2026.03.13</p>

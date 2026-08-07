@@ -1,0 +1,26 @@
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+    .text-balance {
+        text-wrap: balance;
+    }
+    .member-card-hover {
+        @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-500 ease-out;
+    }
+    .theme-transition {
+        @apply transition-all duration-700 ease-in-out;
+    }
+    .carousel-item {
+        @apply absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out;
+    }
+    .carousel-item.active {
+        @apply opacity-100;
+    }
+    .carousel-item img {
+        @apply object-cover;
+    }
+    .loader-spinner {
+        @apply w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin-slow;
+    }
+}

@@ -9,252 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="/js/dev.js"></script>
-    <style>
-        body {
-            font-family: 'Ubuntu', sans-serif;
-            font-weight: 700;
-        }
-    </style>
-     
-     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0071e3',
-                        secondary: '#f5f5f7',
-                        dark: '#1d1d1f',
-                    },
-                    fontFamily: {
-                        sans: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
-                    },
-                    transitionProperty: {
-                        'height': 'height',
-                        'spacing': 'margin, padding',
-                        'all': 'all',
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.8s ease-out forwards',
-                        'slide-up': 'slideUp 0.8s ease-out forwards',
-                        'spin-slow': 'spin 2s linear infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        }
-                    }
-                },
-            }
-        }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .text-balance {
-                text-wrap: balance;
-            }
-            .member-card-hover {
-                @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-500 ease-out;
-            }
-            .theme-transition {
-                @apply transition-all duration-700 ease-in-out;
-            }
-            .carousel-item {
-                @apply absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out;
-            }
-            .carousel-item.active {
-                @apply opacity-100;
-            }
-            .carousel-item img {
-                @apply object-cover;
-            }
-            .loader-spinner {
-                @apply w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin-slow;
-            }
-        }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-            transition: background 0.3s ease;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #666;
-        }
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #888;
-        }
-        
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
-        }
-        .dark #loader {
-            background-color: #1d1d1f;
-        }
-        #loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
-        .carousel-dot {
-            transition: all 0.3s ease;
-        }
-        .carousel-dot:first-child {
-            width: 24px !important;
-        }
-        .carousel-dot.active {
-            width: 24px;
-            background-color: #0071e3;
-        }
-        
-        .btn-ripple {
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-ripple:after {
-            content: "";
-            background: rgba(255,255,255,0.3);
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-        }
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-        
-        .carousel-bg-container {
-            position: relative;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        
-        .announcement-popup {
-             position: fixed;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             background: rgba(0, 0, 0, 0.6);
-             backdrop-filter: blur(6px);
-             z-index: 9998;
-             opacity: 0;
-             visibility: hidden;
-             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             padding: 20px;
-         }
-         
-         .announcement-popup.active {
-             opacity: 1;
-             visibility: visible;
-         }
-         
-         .announcement-content {
-             background: white;
-             border-radius: 30px;
-             padding: 40px;
-             max-width: 500px;
-             width: 100%;
-             max-height: 80vh;
-             overflow-y: auto;
-             box-shadow: 0 60px 120px rgba(0, 0, 0, 0.16);
-             transform: scale(0.9);
-             transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-         }
-         
-         .announcement-popup.active .announcement-content {
-             transform: scale(1);
-         }
-         
-         .announcement-header {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             margin-bottom: 25px;
-             padding-bottom: 15px;
-             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-         }
-         
-         .announcement-header h3 {
-             font-size: 24px;
-             font-weight: 600;
-             color: var(--text);
-             display: flex;
-             align-items: center;
-         }
-         
-         .announcement-close {
-             background: rgba(0, 0, 0, 0.05);
-             border: none;
-             border-radius: 50%;
-             width: 40px;
-             height: 40px;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             cursor: pointer;
-             transition: all 0.3s ease;
-         }
-         
-         .announcement-close:hover {
-             background: rgba(0, 0, 0, 0.1);
-         }
-         
-         .announcement-close i {
-             font-size: 18px;
-             color: var(--text);
-         }
-         
-         .announcement-body {
-             font-size: 16px;
-             line-height: 1.8;
-             color: var(--text);
-         }
-         
-         .announcement-body p {
-             margin-bottom: 15px;
-         }
-         
-         .announcement-body p:last-child {
-             margin-bottom: 0;
-         }
-    </style>
+    <script src="dev/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="dev/css/base.css">
+    <link rel="stylesheet" href="dev/css/tailwind-extend.css">
+    <link rel="stylesheet" href="dev/css/popup.css">
 </head>
 
 <body class="bg-white dark:bg-dark text-gray-900 dark:text-gray-100 theme-transition min-h-screen opacity-0 animate-fade-in">
@@ -351,95 +109,20 @@
                 <p class="text-[clamp(1rem,2vw,1.25rem)] text-white/90 max-w-2xl mx-auto mb-12 text-balance">
                     创立于2023.12.31，平均等级137。
                 </p>
-                <a href="#members" class="inline-block bg-primary text-white px-8 py-3 rounded-full hover:bg-[#0077ed] transition-all duration-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 btn-ripple">
+                <button id="openMemberPopupBtn" class="inline-block bg-primary text-white px-8 py-3 rounded-full hover:bg-[#0077ed] transition-all duration-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 btn-ripple">
                     认识投票组 <i class="fa fa-arrow-down ml-2 animate-bounce"></i>
-                </a>
+                </button>
             </div>
         </div>
     </section>
 
     <section id="members" class="py-20 px-4 bg-white dark:bg-dark theme-transition">
-        <div class="container mx-auto max-w-7xl">
-            <div class="text-center mb-16 animate-slide-up">
+        <div class="container mx-auto max-w-4xl text-center">
+            <div class="animate-slide-up">
                 <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">投票组</h2>
-                <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                每一件事都共同商讨
-            </p>
-            </div>
-            
-            <div class="flex flex-wrap justify-center gap-4 md:gap-6 mx-auto max-w-6xl">
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.1s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/h1mo1.jpg" alt="h1mo1 - 大总管" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">h1mo1</h3>
-                        <p class="text-primary text-xs">大总管</p>
-                    </div>
-                </div>
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.2s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/lerv.jpg" alt="duolian - 副管" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">Lerv</h3>
-                        <p class="text-primary text-xs">投票组</p>
-                    </div>
-                </div>
-                <!--<div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.3s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/frozenx.jpg" alt="frozenx - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">frozenx</h3>
-                        <p class="text-primary text-xs">成员</p>
-                    </div>
-                </div>-->
-                <!--<div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.4s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/duolian.jpg" alt="lerv - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">duolian</h3>
-                        <p class="text-primary text-xs">雄鹰</p>
-                    </div>
-                </div>-->
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.5s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/bintang.jpg" alt="bintang - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">resolev</h3>
-                        <p class="text-primary text-xs">投票组</p>
-                    </div>
-                </div>
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.6s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/nmrn.jpg" alt="nmrn - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">_NMRN_</h3>
-                        <p class="text-primary text-xs">古墓丽影</p>
-                    </div>
-                </div>
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.7s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="imgs/avatars/xy.jpg" alt="xy - 成员" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">Xyiw46_</h3>
-                        <p class="text-primary text-xs">技术支持</p>
-                    </div>
-                </div>
-                <div class="bg-white/90 dark:bg-gray-800/90 rounded-xl overflow-hidden shadow-md member-card-hover theme-transition animate-fade-in" style="animation-delay: 0.8s">
-                    <div class="h-36 overflow-hidden">
-                        <img src="https://ts4.tc.mm.bing.net/th/id/OIP-C.LGdyhHmVwaebSiVobGmCAQHaJX?rs=1&pid=ImgDetMain" alt="您 - 待加入" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-3 text-center">
-                        <h3 class="text-base font-semibold mb-1">您</h3>
-                        <p class="text-primary text-xs">待加入</p>
-                    </div>
-                </div>
+                <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
+                    每一件事都共同商讨，点击上方首页按钮查看全部投票组成员信息。
+                </p>
             </div>
         </div>
     </section>
@@ -519,6 +202,19 @@
         </div>
     </div>
     
+    <div class="member-popup" id="memberPopup">
+        <div class="member-popup-box">
+            <div class="member-popup-header">
+                <h3 class="text-2xl font-bold">MOV投票组成员（共15人）</h3>
+                <button class="member-close-btn" id="memberCloseBtn">
+                    <i class="fa fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5" id="memberBoxWrap">
+            </div>
+        </div>
+    </div>
+
     <div class="fixed bottom-4 right-4 bg-white dark:bg-gray-900 shadow-xl rounded-lg p-4 transform translate-x-full transition-transform duration-500 ease-in-out z-50" id="qrPopup">
         <div class="flex flex-col gap-4">
             <div class="flex flex-col items-center">
@@ -533,193 +229,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 800);
-        });
-
-const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-        } else {
-            html.classList.remove('dark');
-        }
-        
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-        });
-        
-        // 移动端菜单
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('shadow-md');
-                header.classList.remove('py-4');
-                header.classList.add('py-2');
-            } else {
-                header.classList.remove('shadow-md');
-                header.classList.remove('py-2');
-                header.classList.add('py-4');
-            }
-        });
-
-const carouselItems = document.querySelectorAll('.carousel-item');
-        const carouselDots = document.querySelectorAll('.carousel-dot');
-        const prevBtn = document.querySelector('.carousel-prev');
-        const nextBtn = document.querySelector('.carousel-next');
-        let currentSlide = 0;
-        let slideInterval;
-
-        function initCarousel() {
-            showSlide(currentSlide);
-            startSlideInterval();
-            
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetSlideInterval();
-            });
-            
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetSlideInterval();
-            });
-            
-            carouselDots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    showSlide(index);
-                    resetSlideInterval();
-                });
-            });
-        }
-
-function showSlide(index) {
-            carouselItems.forEach(item => item.classList.remove('active'));
-            carouselDots.forEach(dot => dot.classList.remove('active'));
-            
-            if (index >= carouselItems.length) currentSlide = 0;
-            else if (index < 0) currentSlide = carouselItems.length - 1;
-            else currentSlide = index;
-            
-            carouselItems[currentSlide].classList.add('active');
-            carouselDots[currentSlide].classList.add('active');
-        }
-
-function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
-
-        function startSlideInterval() {
-            slideInterval = setInterval(nextSlide, 5000);
-        }
-
-        function resetSlideInterval() {
-            clearInterval(slideInterval);
-            startSlideInterval();
-        }
-
-        document.addEventListener('DOMContentLoaded', initCarousel);
-
-document.querySelectorAll('.btn-ripple').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                const x = e.clientX - e.target.getBoundingClientRect().left;
-                const y = e.clientY - e.target.getBoundingClientRect().top;
-                const ripple = document.createElement('span');
-                ripple.style.width = ripple.style.height = Math.max(this.offsetWidth, this.offsetHeight) + 'px';
-                ripple.style.left = x - (parseInt(ripple.style.width) / 2) + 'px';
-                ripple.style.top = y - (parseInt(ripple.style.height) / 2) + 'px';
-                ripple.classList.add('ripple');
-                
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.backgroundColor = 'rgba(255,255,255,0.3)';
-                ripple.style.pointerEvents = 'none';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.zIndex = '10';
-                
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
-
-        const announcementPopup = document.getElementById('announcementPopup');
-        const announcementClose = document.getElementById('announcementClose');
-        const announcementBody = document.getElementById('announcementBody');
-
-        announcementClose.addEventListener('click', () => {
-            announcementPopup.classList.remove('active');
-        });
-        
-        announcementPopup.addEventListener('click', (e) => {
-            if (e.target === announcementPopup) {
-                announcementPopup.classList.remove('active');
-            }
-        });
-        
-        const qrPopup = document.getElementById('qrPopup');
-        let hasScrolled = false
-        setTimeout(() => {
-            qrPopup.classList.remove('translate-x-full');
-        }, 1000);
-        window.addEventListener('scroll', () => {
-            qrPopup.classList.add('translate-x-full');
-        });
-        qrPopup.addEventListener('click', (e) => {
-            if (e.target === qrPopup) {
-                qrPopup.classList.add('translate-x-full');
-            }
-        });
-        
-        const announcementContent = `
-            <p>1、公会加入制度改为邀请制</p>
-            <p>2、MOV投票组正式成立，网站正在同步成员信息</p>
-            <p>3、咨询问题请向movers@iw46.top扔邮件。我们会尽快答复你</p>
-            
-            
-            <p>——MOV内阁 2026.08.04</p>
-        `;
-        announcementBody.innerHTML = announcementContent;
-        setTimeout(() => {
-            announcementPopup.classList.add('active');
-        }, 1000);
-    </script>
+<script src="dev/js/main.js"></script>
 </body>
 </html>
-

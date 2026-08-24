@@ -17,6 +17,7 @@
     </style>
      
      <script>
+         console.log("tailwind配置加载成功")
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -478,10 +479,10 @@
                     <p class="text-gray-600 dark:text-gray-400">已经连续两次举办比赛活动，虽然第二次被M28搞黄了，但热情不减</p>
                 </div>
             </div>
-            <div class="inline-block mt-12">
+            <!--<div class="inline-block mt-12">
                 <a href="#join" class="inline-block border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full transition-all duration-500 transform hover:-translate-y-1 hover:scale-105 btn-ripple">
                     申请加入 <i class="fa fa-arrow-right ml-2"></i>
-                </a>
+                </a>-->
             </div>
         </div>
     </section>
@@ -564,6 +565,7 @@
     </div>
 
     <script>
+        console.log("main.js")
 window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loader').classList.add('hidden');
